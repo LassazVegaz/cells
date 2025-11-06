@@ -56,7 +56,7 @@ enum Action {
 }
 // input the current state, next state is the output
 const actions: Record<Action, (s: number) => number> = {
-  [Action.Left]: (s) => (s % gridSize !== 1 ? s - 1 : s),
+  [Action.Left]: (s) => (s % gridSize === 1 ? s : s - 1),
   [Action.Right]: (s) => (s % gridSize > 0 ? s + 1 : s),
   [Action.Down]: (s) => (s < boxesCount - gridSize ? s + gridSize : s),
   [Action.Up]: (s) => (s > gridSize ? s - gridSize : s),
