@@ -1,4 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import Configurations from './types/configurations';
+import * as fs from 'fs';
+
+type StorageData = {
+  q?: Record<number, number[]>;
+};
 
 enum Action {
   Left,
@@ -10,7 +17,7 @@ enum Action {
 @Injectable()
 export class AppService {
   private readonly rewards: number[] = [];
-  private readonly q: Record<number, number[]> = {};
+  private readonly q: Record<number, number[]>;
   private readonly gridSize = 10;
   private readonly boxesCount = this.gridSize * this.gridSize;
   private readonly actionsCount = 4;
@@ -25,11 +32,9 @@ export class AppService {
     [Action.Up]: (s) => (s > this.gridSize ? s - this.gridSize : s),
   };
 
-  constructor() {
-    for (let i = 1; i <= this.boxesCount; i++) {
-      this.q[i] = [];
-      for (let j = 0; j < this.actionsCount; j++) this.q[i][j] = Math.random();
-    }
+  constructor(private readonly configs: ConfigService<Configurations>) {
+    const storeData = this.getStorageData();
+    this.q = storeData.q || this.getRandomQ();
   }
 
   train() {
@@ -47,6 +52,8 @@ export class AppService {
       states.push(c1);
     }
 
+    this.saveStorageData();
+
     return states;
   }
 
@@ -63,5 +70,31 @@ export class AppService {
 
     const newQ = currentQ + alpha * (reward + discount * bestNextQ - currentQ);
     return newQ;
+  }
+
+  private getStorageData(): StorageData {
+    const storeFile = this.configs.get<string>('STORE_FILE');
+    if (!storeFile) throw new Error('STORE_FILE is not defined');
+    const content = fs.readFileSync(storeFile);
+    const json = JSON.parse(content.toString()) as StorageData;
+    return json;
+  }
+
+  private saveStorageData() {
+    const data: StorageData = {
+      q: this.q,
+    };
+    const storeFile = this.configs.get<string>('STORE_FILE');
+    if (!storeFile) throw new Error('STORE_FILE is not defined');
+    fs.writeFileSync(storeFile, JSON.stringify(data, null, 2));
+  }
+
+  private getRandomQ(): Record<number, number[]> {
+    const _q: Record<number, number[]> = {};
+    for (let i = 1; i <= this.boxesCount; i++) {
+      _q[i] = [];
+      for (let j = 0; j < this.actionsCount; j++) _q[i][j] = Math.random();
+    }
+    return _q;
   }
 }
