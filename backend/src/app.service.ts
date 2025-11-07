@@ -35,7 +35,7 @@ export class AppService {
 
   constructor(private readonly configs: ConfigService<Configurations>) {
     const storeData = this.getStorageData();
-    this.q = storeData.q || this.getRandomQ();
+    this.q = storeData.q || this.generateQs();
     this.rewards = this.generateRewards();
   }
 
@@ -127,11 +127,11 @@ export class AppService {
     fs.writeFileSync(storeFile, JSON.stringify(data, null, 2));
   }
 
-  private getRandomQ(): Record<number, number[]> {
+  private generateQs(): Record<number, number[]> {
     const _q: Record<number, number[]> = {};
     for (let i = 1; i <= this.boxesCount; i++) {
       _q[i] = [];
-      for (let j = 0; j < this.actionsCount; j++) _q[i][j] = Math.random();
+      for (let j = 0; j < this.actionsCount; j++) _q[i][j] = 0;
     }
     return _q;
   }
