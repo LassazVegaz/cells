@@ -69,7 +69,7 @@ export class AppService {
       return Math.floor(Math.random() * 10) % this.actionsCount;
     } else {
       const qValues = this.q[s];
-      let maxIdx = qValues[0];
+      let maxIdx = 0;
       for (let i = 1; i < this.actionsCount; i++)
         if (qValues[maxIdx] < qValues[i]) maxIdx = i;
       return maxIdx;
