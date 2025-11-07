@@ -1,3 +1,8 @@
+type Data = {
+  states: number[];
+  maxRewards: number;
+};
+
 const fps = 60;
 const gridSize = 10; // 10x10
 const cellSize = 40;
@@ -11,6 +16,10 @@ const c2 = boxesCount; // bottom right
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 canvas.width = gridSize * cellSize;
 canvas.height = gridSize * cellSize;
+
+const maxRewardsSpan = document.getElementById(
+  "stats-rewards"
+) as HTMLSpanElement;
 
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
@@ -52,7 +61,9 @@ const start = async () => {
   const url = import.meta.env.VITE_BACKEND_URL + "/train";
 
   const res = await fetch(url);
-  const states: number[] = await res.json();
+  const { states, maxRewards } = (await res.json()) as Data;
+
+  maxRewardsSpan.innerText = maxRewards.toString();
 
   const ms = 1000 / fps;
   let i = 0;

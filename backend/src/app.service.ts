@@ -36,10 +36,12 @@ export class AppService {
   constructor(private readonly configs: ConfigService<Configurations>) {
     const storeData = this.getStorageData();
     this.q = storeData.q || this.getRandomQ();
+    this.rewards = this.generateRewards();
   }
 
   train() {
     let e = 1;
+    let maxRewards = -Infinity;
     const rounds = 2000;
     const states: number[] = [];
 
@@ -52,17 +54,22 @@ export class AppService {
       let c1 = 1; // player - top left
       states.push(c1);
 
+      let roundRewards = 0;
+
       for (let j = 0; j < this.maxIterationsPerRound; j++) {
         const action = this.chooseAction(c1, e);
+        roundRewards += this.rewards[c1];
         this.q[c1][action] = this.calculateQ(c1, this.c2, action);
         c1 = this.performAction(action, c1);
         states.push(c1);
       }
+
+      if (roundRewards > maxRewards) maxRewards = roundRewards;
     }
 
     this.saveStorageData();
 
-    return states;
+    return { maxRewards, states };
   }
 
   private chooseAction(s: number, e: number): Action {
@@ -125,5 +132,14 @@ export class AppService {
       for (let j = 0; j < this.actionsCount; j++) _q[i][j] = Math.random();
     }
     return _q;
+  }
+
+  private generateRewards() {
+    const _r: number[] = [];
+    for (let i = 1; i < this.boxesCount; i++) {
+      _r[i] = -1;
+    }
+    _r[this.boxesCount] = 100; // goal state
+    return _r;
   }
 }
