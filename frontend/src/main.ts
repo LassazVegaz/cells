@@ -21,6 +21,9 @@ canvas.height = gridSize * cellSize;
 const maxRewardsSpan = document.getElementById(
   "stats-rewards"
 ) as HTMLSpanElement;
+const allowDecayCheckbox = document.getElementById(
+  "decayE"
+) as HTMLInputElement;
 
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
@@ -70,7 +73,8 @@ draw();
 
 const start = async () => {
   running = true;
-  const url = import.meta.env.VITE_BACKEND_URL + "/train";
+  const decayE = allowDecayCheckbox.checked;
+  const url = import.meta.env.VITE_BACKEND_URL + "/train?decayE=" + decayE;
 
   const res = await fetch(url);
   const { states, maxRewards } = (await res.json()) as Data;

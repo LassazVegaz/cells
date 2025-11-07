@@ -30,18 +30,37 @@
         margin: 20px 0;
         text-align: center;
         display: flex;
-        gap: 20px;
+        flex-direction: column;
 
-        button {
-          background: #db07c9;
-          border: none;
-          padding: 10px 0;
-          width: 100px;
-          color: #000;
-          font-weight: bold;
+        #switches {
+          margin-bottom: 10px;
+          color: #fff;
+          font-family: Arial, sans-serif;
           font-size: 16px;
-          cursor: pointer;
-          box-shadow: 0 0 5px #db07c9;
+
+          input {
+            margin-left: 10px;
+            transform: scale(1.5);
+            cursor: pointer;
+          }
+        }
+
+        #buttons {
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+
+          button {
+            background: #db07c9;
+            border: none;
+            padding: 10px 0;
+            width: 100px;
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 5px #db07c9;
+          }
         }
       }
 
@@ -61,8 +80,16 @@
       <span id="stats-rewards">unknown</span>
     </div>
     <div id="controls">
-      <button id="start-btn">START</button>
-      <button id="stop-btn">STOP</button>
+      <div id="switches">
+        <label for="decayE">
+          Decay E
+          <input type="checkbox" id="decayE" checked />
+        </label>
+      </div>
+      <div id="buttons">
+        <button id="start-btn">START</button>
+        <button id="stop-btn">STOP</button>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

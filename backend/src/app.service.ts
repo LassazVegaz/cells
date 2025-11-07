@@ -7,6 +7,10 @@ type StorageData = {
   q?: Record<number, number[]>;
 };
 
+export type TrainParams = {
+  decayE: boolean;
+};
+
 enum Action {
   Left,
   Right,
@@ -39,7 +43,9 @@ export class AppService {
     this.rewards = this.generateRewards();
   }
 
-  train() {
+  train(p: TrainParams) {
+    console.log(`Decay e: ${p.decayE}`);
+
     let e = 1;
     let maxRewards = -Infinity;
     const rounds = 2000;
@@ -47,9 +53,10 @@ export class AppService {
 
     const decay = this.generateDecayFunction(e, 0.25 * rounds, 0.8 * rounds);
 
+    console.log('Starting training...');
     for (let i = 0; i < rounds; i++) {
       process.stdout.write(`\rTraining round ${i + 1} / ${rounds}`);
-      e = decay(e, i);
+      if (p.decayE) e = decay(e, i);
 
       let c1 = 1; // player - top left
 
