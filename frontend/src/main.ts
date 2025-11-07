@@ -1,7 +1,8 @@
-// 10x10
-const gridSize = 10;
+const fps = 60;
+const gridSize = 10; // 10x10
 const cellSize = 40;
 const boxesCount = gridSize * gridSize;
+let timer: number | null = null;
 
 // two cells
 let c1 = 1; // top left
@@ -47,60 +48,26 @@ const draw = () => {
 
 draw();
 
-// actions are, move left, right, down or up (0, 1, 2, 3)
-enum Action {
-  Left,
-  Right,
-  Down,
-  Up,
-}
-// input the current state, next state is the output
-const actions: Record<Action, (s: number) => number> = {
-  [Action.Left]: (s) => (s % gridSize === 1 ? s : s - 1),
-  [Action.Right]: (s) => (s % gridSize > 0 ? s + 1 : s),
-  [Action.Down]: (s) => (s < boxesCount - gridSize ? s + gridSize : s),
-  [Action.Up]: (s) => (s > gridSize ? s - gridSize : s),
-};
-const actionsCount = 4;
-// perform acion on the given state
-const performAction = (a: Action, s: number) => actions[a](s);
+const start = async () => {
+  const url = import.meta.env.VITE_BACKEND_URL + "/train";
 
-// Q values of states and actions
-const q: Record<number, number[]> = {};
-for (let i = 1; i <= boxesCount; i++) {
-  q[i] = [];
-  for (let j = 0; j < actionsCount; j++) q[i][j] = Math.random();
-}
+  const res = await fetch(url);
+  const states: number[] = await res.json();
 
-// lets see how c1 goes to c2
+  const ms = 1000 / fps;
+  let i = 0;
+  timer = setInterval(() => {
+    if (i === states.length && timer !== null) clearInterval(timer);
 
-// rewards: every box (state) has -1 except c2 box (last state) which has 20
-const rewards: number[] = [];
-for (let i = 1; i <= boxesCount; i++) rewards[i] = -1;
-rewards[boxesCount] = 20;
-
-const calculateQ = (s: number, a: Action) => {
-  const currentQ = q[s][a];
-  const reward = rewards[s];
-  const newS = performAction(a, s);
-  const bestNextQ = Math.max(...q[newS]);
-  const alpha = 0.1;
-  const discount = 0.95;
-
-  const newQ = currentQ + alpha * (reward + discount * bestNextQ - currentQ);
-  return newQ;
+    c1 = states[i++];
+    draw();
+  }, ms);
 };
 
-// pick random action
-const _actions = [Action.Left, Action.Right, Action.Down, Action.Up];
+const stop = () => {
+  if (timer !== null) clearInterval(timer);
+};
 
-let count = 0;
-const timer = setInterval(() => {
-  count++;
-  if (count > 1000) clearInterval(timer);
-
-  const randomAction = _actions[Math.floor(Math.random() * 10) % actionsCount];
-  q[c1][randomAction] = calculateQ(c1, randomAction);
-  c1 = performAction(randomAction, c1);
-  draw();
-}, 50);
+document.getElementById("start-btn")!.onclick = start;
+document.getElementById("stop-btn")!.onclick = stop;
+window.onload = start;
