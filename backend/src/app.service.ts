@@ -21,6 +21,7 @@ export class AppService {
   private readonly gridSize = 10;
   private readonly boxesCount = this.gridSize * this.gridSize;
   private readonly actionsCount = 4;
+  private readonly maxIterationsPerRound = 18;
 
   private readonly c2 = this.boxesCount;
 
@@ -40,21 +41,51 @@ export class AppService {
   train() {
     // player
     let c1 = 1; // top left
-
-    const _actions = [Action.Left, Action.Right, Action.Down, Action.Up];
+    let e = 1;
+    const rounds = 2000;
     const states: number[] = [];
 
-    for (let i = 0; i < 1000; i++) {
-      const randomAction =
-        _actions[Math.floor(Math.random() * 10) % this.actionsCount];
-      this.q[c1][randomAction] = this.calculateQ(c1, this.c2, randomAction);
-      c1 = this.performAction(randomAction, c1);
-      states.push(c1);
+    const decayFunc = this.generateDecayFunction(
+      e,
+      0.25 * rounds,
+      0.8 * rounds,
+    );
+
+    for (let i = 0; i < rounds; i++) {
+      e = decayFunc(i);
+
+      for (let j = 0; j < this.maxIterationsPerRound; j++) {
+        const action = this.chooseAction(c1, e);
+        this.q[c1][action] = this.calculateQ(c1, this.c2, action);
+        c1 = this.performAction(action, c1);
+        states.push(c1);
+      }
     }
 
     this.saveStorageData();
 
     return states;
+  }
+
+  private chooseAction(s: number, e: number): Action {
+    if (Math.random() <= e) {
+      return Math.floor(Math.random() * 10) % this.actionsCount;
+    } else {
+      const qValues = this.q[s];
+      let maxIdx = qValues[0];
+      for (let i = 1; i < this.actionsCount; i++)
+        if (qValues[maxIdx] < qValues[i]) maxIdx = i;
+      return maxIdx;
+    }
+  }
+
+  private generateDecayFunction(e: number, start: number, end: number) {
+    const rate = e / (end - start);
+    return (round: number) => {
+      if (round < start) return e;
+      if (round >= end) return 0;
+      return e - rate;
+    };
   }
 
   private performAction(a: Action, s: number) {
