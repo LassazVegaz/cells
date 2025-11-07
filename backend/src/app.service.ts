@@ -49,7 +49,7 @@ export class AppService {
 
     for (let i = 0; i < rounds; i++) {
       process.stdout.write(`\rTraining round ${i + 1} / ${rounds}`);
-      e = decay(i);
+      e = decay(e, i);
 
       for (let j = 0; j < this.maxIterationsPerRound; j++) {
         const action = this.chooseAction(c1, e);
@@ -78,7 +78,7 @@ export class AppService {
 
   private generateDecayFunction(e: number, start: number, end: number) {
     const rate = e / (end - start);
-    return (round: number) => {
+    return (e: number, round: number) => {
       if (round < start) return e;
       if (round >= end) return 0;
       return e - rate;
