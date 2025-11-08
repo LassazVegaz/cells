@@ -110,4 +110,4 @@ const stop = () => {
 
 document.getElementById("start-btn")!.onclick = start;
 document.getElementById("stop-btn")!.onclick = stop;
-window.onload = start;
+// window.onload = start;
