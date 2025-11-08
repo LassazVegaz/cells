@@ -27,7 +27,7 @@ export class GameService {
 
   constructor() {
     this.distanceRewards = this.generateDistanceRewards();
-    this.hittingWallPenalty = Math.min(...this.distanceRewards) - 1;
+    this.hittingWallPenalty = Math.min(...this.distanceRewards.slice(1)) - 1;
   }
 
   getRewards(oldS: number, s: number): number {
