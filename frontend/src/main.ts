@@ -84,7 +84,7 @@ const draw = () => {
 draw();
 
 const train = async (): Promise<TrainingData> => {
-  trainingBlocker.style.display = "box";
+  trainingBlocker.style.display = "flex";
 
   const decayE = allowDecayCheckbox.checked;
   const rounds = parseInt(roundsInput.value) || 2000;
