@@ -38,10 +38,13 @@
           font-family: Arial, sans-serif;
           font-size: 16px;
 
-          input {
-            margin-left: 10px;
-            transform: scale(1.5);
+          label {
+            margin: 0 15px;
             cursor: pointer;
+          }
+          input[type="number"] {
+            width: 80px;
+            margin-left: 5px;
           }
         }
 
@@ -83,7 +86,11 @@
       <div id="switches">
         <label for="decayE">
           Decay E
-          <input type="checkbox" id="decayE" checked />
+          <input type="checkbox" id="decayE" />
+        </label>
+        <label for="rounds">
+          Rounds
+          <input type="number" id="rounds" />
         </label>
       </div>
       <div id="buttons">

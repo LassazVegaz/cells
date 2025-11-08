@@ -24,6 +24,7 @@ const maxRewardsSpan = document.getElementById(
 const allowDecayCheckbox = document.getElementById(
   "decayE"
 ) as HTMLInputElement;
+const roundsInput = document.getElementById("rounds") as HTMLInputElement;
 
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
@@ -74,7 +75,10 @@ draw();
 const start = async () => {
   running = true;
   const decayE = allowDecayCheckbox.checked;
-  const url = import.meta.env.VITE_BACKEND_URL + "/train?decayE=" + decayE;
+  const rounds = parseInt(roundsInput.value) || 2000;
+  const url = `${
+    import.meta.env.VITE_BACKEND_URL
+  }/train?decayE=${decayE}&rounds=${rounds}`;
 
   const res = await fetch(url);
   const { states, maxRewards } = (await res.json()) as Data;

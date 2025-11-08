@@ -10,6 +10,7 @@ type StorageData = {
 
 export type TrainParams = {
   decayE: boolean;
+  rounds?: number;
 };
 
 @Injectable()
@@ -19,6 +20,7 @@ export class AppService {
   private readonly boxesCount = this.gridSize * this.gridSize;
   private readonly actionsCount = 4;
   private readonly maxIterationsPerRound = 18;
+  private readonly defaultRounds = 2000;
 
   private readonly c2 = this.boxesCount;
 
@@ -31,18 +33,23 @@ export class AppService {
   }
 
   train(p: TrainParams) {
+    p.rounds ??= this.defaultRounds;
     console.log(`Decay e: ${p.decayE}`);
+    console.log(`Rounds: ${p.rounds}`);
 
     let e = 1;
     let maxRewards = -Infinity;
-    const rounds = 2000;
     const states: number[][] = [];
 
-    const decay = this.generateDecayFunction(e, 0.25 * rounds, 0.8 * rounds);
+    const decay = this.generateDecayFunction(
+      e,
+      0.25 * p.rounds,
+      0.8 * p.rounds,
+    );
 
     console.log('Starting training...');
-    for (let i = 0; i < rounds; i++) {
-      process.stdout.write(`\rTraining round ${i + 1} / ${rounds}`);
+    for (let i = 0; i < p.rounds; i++) {
+      process.stdout.write(`\rTraining round ${i + 1} / ${p.rounds}`);
       if (p.decayE) e = decay(e, i);
 
       let c1 = 1; // player - top left
