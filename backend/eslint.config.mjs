@@ -27,6 +27,7 @@ export default defineConfig(
   },
   {
     rules: {
+      '@typescript-eslint/no-floating-promises': 'warn',
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },

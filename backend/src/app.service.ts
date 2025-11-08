@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Configurations from './types/configurations';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import { GameService, Action } from './game.service';
 
 type StorageData = {

@@ -13,7 +13,7 @@ export class AppController {
   train(@Query() query: TrainQuery) {
     const params: TrainParams = {
       decayE: query.decayE === 'true',
-      rounds: query.rounds ? parseInt(query.rounds) : undefined,
+      rounds: query.rounds ? Number.parseInt(query.rounds) : undefined,
     };
     return this.appService.train(params);
   }
