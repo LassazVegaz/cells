@@ -33,7 +33,7 @@
         flex-direction: column;
 
         #switches {
-          margin-bottom: 10px;
+          margin-bottom: 30px;
           color: #fff;
           font-family: Arial, sans-serif;
           font-size: 16px;
@@ -68,11 +68,16 @@
       }
 
       #stats {
+        position: absolute;
+        top: 10px;
+        left: 10px;
         color: #fff;
-        margin-bottom: 10px;
         font-family: Arial, sans-serif;
-        font-size: 18px;
-        text-align: center;
+        font-size: 16px;
+
+        div {
+          margin-bottom: 5px;
+        }
       }
 
       #training-blocker {
@@ -94,10 +99,7 @@
   </head>
   <body>
     <canvas id="canvas"></canvas>
-    <div id="stats">
-      <span>Max Rewards: </span>
-      <span id="stats-rewards">unknown</span>
-    </div>
+
     <div id="controls">
       <div id="switches">
         <label for="decayE">
@@ -118,8 +120,20 @@
         <button id="stop-btn">STOP</button>
         <button id="train-btn">JUST TRAIN</button>
       </div>
-      <div id="training-blocker">Training...</div>
     </div>
+
+    <!-- Absolutes -->
+    <div id="stats">
+      <div>
+        <span>Max Rewards: </span>
+        <span id="stats-rewards">unknown</span>
+      </div>
+      <div>
+        <span>Current Round: </span>
+        <span id="current-round">unknown</span>
+      </div>
+    </div>
+    <div id="training-blocker">Training...</div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

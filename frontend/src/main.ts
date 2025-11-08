@@ -26,6 +26,9 @@ canvas.height = gridSize * cellSize;
 const maxRewardsSpan = document.getElementById(
   "stats-rewards"
 ) as HTMLSpanElement;
+const currentRoundSpan = document.getElementById(
+  "current-round"
+) as HTMLSpanElement;
 const allowDecayCheckbox = document.getElementById(
   "decayE"
 ) as HTMLInputElement;
@@ -128,6 +131,7 @@ const stop = () => {
   if (timer !== null) clearInterval(timer);
   running = false;
   draw();
+  currentRoundSpan.innerText = "unknown";
 };
 
 const play = (states: number[][]) => {
@@ -135,6 +139,9 @@ const play = (states: number[][]) => {
   const ms = 1000 / fps;
   let i = 0;
   let j = 0;
+
+  currentRoundSpan.innerText = (i + 1).toString();
+
   timer = setInterval(() => {
     if (i >= states.length && timer !== null) {
       stop();
@@ -148,6 +155,7 @@ const play = (states: number[][]) => {
       j = 0;
       if (i === 0) i = -1; // first & last iterations must always run
       i += skip;
+      currentRoundSpan.innerText = (i + 1).toString();
     }
   }, ms);
 };
