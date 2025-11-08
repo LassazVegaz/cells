@@ -12,6 +12,7 @@ export class GameService {
   private readonly rewards: number[] = [];
   private readonly gridSize = 10;
   private readonly boxesCount = this.gridSize * this.gridSize;
+  private readonly hittingWallPenalty = -2;
 
   private readonly actions: Record<Action, (s: number) => number> = {
     [Action.Left]: (s) => (s % this.gridSize === 1 ? s : s - 1),
@@ -25,7 +26,8 @@ export class GameService {
     this.rewards = this.generateRewards();
   }
 
-  getRewards(s: number): number {
+  getRewards(oldS: number, s: number): number {
+    if (oldS === s) return this.hittingWallPenalty; // penalty for hitting wall
     return this.rewards[s - 1];
   }
 

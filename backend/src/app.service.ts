@@ -54,9 +54,10 @@ export class AppService {
 
       for (let j = 0; j < this.maxIterationsPerRound; j++) {
         const action = this.chooseAction(c1, e);
-        roundRewards += this.game.getRewards(c1);
         this.q[c1][action] = this.calculateQ(c1, this.c2, action);
+        const oldC1 = c1;
         c1 = this.game.performAction(action, c1);
+        roundRewards += this.game.getRewards(oldC1, c1);
         states[i].push(c1);
       }
 
@@ -92,7 +93,7 @@ export class AppService {
 
   private calculateQ(s: number, nextS: number, a: Action) {
     const currentQ = this.q[s][a];
-    const reward = this.game.getRewards(nextS);
+    const reward = this.game.getRewards(s, nextS);
     const bestNextQ = Math.max(...this.q[nextS]);
     const alpha = 0.1;
     const discount = 0.95;
