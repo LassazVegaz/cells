@@ -1,17 +1,4 @@
-/**
- * [X, y]
- */
-export type Coordinate = [number, number];
-
-type TrainingData = {
-  states: Coordinate[][];
-  maxRewards: number;
-};
-
-type BestStatesData = {
-  states: Coordinate[];
-  rewards: number;
-};
+import type { Coordinate, TrainingData, BestStatesData } from "./types";
 
 const fps = 10;
 const gridSize = 10; // 10x10
