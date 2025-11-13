@@ -1,4 +1,10 @@
-import type { Coordinate, TrainingData, BestStatesData } from "./types";
+import { getBestStates, train } from "./api";
+import type {
+  Coordinate,
+  TrainingData,
+  BestStatesData,
+  TrainParams,
+} from "./types";
 
 const fps = 10;
 const gridSize = 10; // 10x10
@@ -70,41 +76,31 @@ const draw = () => {
 
 draw();
 
-const train = async (): Promise<TrainingData> => {
-  trainingBlocker.style.display = "flex";
-
-  const decayE = allowDecayCheckbox.checked;
-  const rounds = Number.parseInt(roundsInput.value) || 2000;
-  const url = `${
-    import.meta.env.VITE_BACKEND_URL
-  }/train?decayE=${decayE}&rounds=${rounds}`;
-
-  const res = await fetch(url);
-  const json = await res.json();
-  trainingBlocker.style.display = "none";
-  return json;
+const disableTrainingBlocker = (show = true) => {
+  trainingBlocker.style.display = show ? "flex" : "none";
 };
 
-const getBestStates = async (): Promise<BestStatesData> => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/best-states`);
-  const json = (await res.json()) as BestStatesData;
-  return json;
-};
+const getTrainParams = (): TrainParams => ({
+  decayE: allowDecayCheckbox.checked,
+  rounds: parseInt(roundsInput.value) || 2000,
+});
 
 const start = async () => {
   running = true;
   let states: Coordinate[][] = [];
   let maxRewards = 0;
 
+  disableTrainingBlocker();
   if (withoutTrainingCheckbox.checked) {
     const data = await getBestStates();
     states = [data.states];
     maxRewards = data.rewards;
   } else {
-    const data = await train();
+    const data = await train(getTrainParams());
     states = data.states;
     maxRewards = data.maxRewards;
   }
+  disableTrainingBlocker(false);
 
   maxRewardsSpan.innerText = maxRewards.toString();
 
@@ -146,4 +142,8 @@ const play = (states: Coordinate[][]) => {
 
 document.getElementById("start-btn")!.onclick = start;
 document.getElementById("stop-btn")!.onclick = stop;
-document.getElementById("train-btn")!.onclick = train;
+document.getElementById("train-btn")!.onclick = async () => {
+  disableTrainingBlocker();
+  await train(getTrainParams());
+  disableTrainingBlocker(false);
+};
