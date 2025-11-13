@@ -1,10 +1,5 @@
 import { getBestStates, train } from "./api";
-import type {
-  Coordinate,
-  TrainingData,
-  BestStatesData,
-  TrainParams,
-} from "./types";
+import type { Coordinate, TrainParams } from "./types";
 
 const fps = 10;
 const gridSize = 10; // 10x10
