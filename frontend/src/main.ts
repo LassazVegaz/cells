@@ -1,19 +1,10 @@
 import { getBestStates, train } from "./api";
+import type { GameState } from "./game";
+import Game from "./game";
 import type { Coordinate, TrainParams } from "./types";
 
 const fps = 10;
-const gridSize = 10; // 10x10
-const cellSize = 40;
 let timer: number | null = null;
-let running = false;
-
-// two cells
-let c1: Coordinate = [0, 0]; // top left
-const c2: Coordinate = [gridSize - 1, gridSize - 1]; // bottom right
-
-const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-canvas.width = gridSize * cellSize;
-canvas.height = gridSize * cellSize;
 
 const maxRewardsSpan = document.getElementById(
   "stats-rewards"
@@ -32,43 +23,25 @@ const withoutTrainingCheckbox = document.getElementById(
   "without-training"
 ) as HTMLInputElement;
 
-const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-
-const draw = () => {
-  // clear
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // draw grid
-  ctx.beginPath();
-  for (let i = 0; i <= gridSize; i++) {
-    ctx.moveTo(i * cellSize, 0);
-    ctx.lineTo(i * cellSize, gridSize * cellSize);
-    ctx.moveTo(0, i * cellSize);
-    ctx.lineTo(gridSize * cellSize, i * cellSize);
-  }
-  ctx.strokeStyle = "#ccc";
-  ctx.stroke();
-  ctx.closePath();
-
-  // draw c2
-  ctx.fillStyle = "green";
-  ctx.fillRect(c2[0] * cellSize, c2[1] * cellSize, cellSize, cellSize);
-
-  // draw c1
-  ctx.fillStyle = "red";
-  ctx.fillRect(c1[0] * cellSize, c1[1] * cellSize, cellSize, cellSize);
-
-  // draw status
-  if (!running) {
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#fff";
-    ctx.font = "30px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("STOPPED", canvas.width / 2, canvas.height / 2);
-  }
+const buildInitialGameState = (): GameState => {
+  const gridSize = 10;
+  return {
+    c1: [0, 0],
+    c2: [gridSize - 1, gridSize - 1],
+    gridSize,
+    cellSize: 40,
+    running: false,
+  };
 };
 
+const s = buildInitialGameState();
+
+const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+canvas.width = s.gridSize * s.cellSize;
+canvas.height = s.gridSize * s.cellSize;
+
+const game = new Game(canvas.getContext("2d")!);
+const draw = () => game.draw(s);
 draw();
 
 const disableTrainingBlocker = (show = true) => {
@@ -81,7 +54,7 @@ const getTrainParams = (): TrainParams => ({
 });
 
 const start = async () => {
-  running = true;
+  s.running = true;
   let states: Coordinate[][] = [];
   let maxRewards = 0;
 
@@ -104,7 +77,7 @@ const start = async () => {
 
 const stop = () => {
   if (timer !== null) clearInterval(timer);
-  running = false;
+  s.running = false;
   draw();
   currentRoundSpan.innerText = "unknown";
 };
@@ -123,7 +96,7 @@ const play = (states: Coordinate[][]) => {
       return;
     }
 
-    c1 = states[i][j++];
+    s.c1 = states[i][j++];
     draw();
 
     if (j === states[i].length) {
