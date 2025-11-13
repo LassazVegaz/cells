@@ -44,7 +44,7 @@ const game = new Game(canvas.getContext("2d")!);
 const draw = () => game.draw(s);
 draw();
 
-const disableTrainingBlocker = (show = true) => {
+const displayTrainingBlocker = (show = true) => {
   trainingBlocker.style.display = show ? "flex" : "none";
 };
 
@@ -58,7 +58,7 @@ const start = async () => {
   let states: Coordinate[][] = [];
   let maxRewards = 0;
 
-  disableTrainingBlocker();
+  displayTrainingBlocker();
   if (withoutTrainingCheckbox.checked) {
     const data = await getBestStates();
     states = [data.states];
@@ -68,7 +68,7 @@ const start = async () => {
     states = data.states;
     maxRewards = data.maxRewards;
   }
-  disableTrainingBlocker(false);
+  displayTrainingBlocker(false);
 
   maxRewardsSpan.innerText = maxRewards.toString();
 
@@ -111,7 +111,7 @@ const play = (states: Coordinate[][]) => {
 document.getElementById("start-btn")!.onclick = start;
 document.getElementById("stop-btn")!.onclick = stop;
 document.getElementById("train-btn")!.onclick = async () => {
-  disableTrainingBlocker();
+  displayTrainingBlocker();
   await train(getTrainParams());
-  disableTrainingBlocker(false);
+  displayTrainingBlocker(false);
 };
